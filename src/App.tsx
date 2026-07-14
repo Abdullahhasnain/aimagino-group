@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { ScrollControls, Scroll, Preload } from "@react-three/drei";
+import { ScrollControls } from "@react-three/drei";
 import { Experience } from "./world/Experience";
 import { Overlay } from "./overlay/Overlay";
 import { HUD } from "./overlay/HUD";
@@ -14,6 +14,7 @@ export default function App() {
     <ErrorBoundary>
       <Canvas
         className="stage"
+        aria-hidden="true"
         dpr={quality.dpr}
         gl={{
           antialias: true,
@@ -24,14 +25,15 @@ export default function App() {
         <Suspense fallback={null}>
           <ScrollControls pages={SCROLL_PAGES} damping={0.3}>
             <Experience />
-            <Scroll html>
-              <Overlay />
-            </Scroll>
           </ScrollControls>
-          <Preload all />
         </Suspense>
       </Canvas>
 
+      {/* Overlay lives in the main React tree (not drei's <Scroll html>
+          sub-root) so content can never silently vanish if that hidden
+          second root fails — it syncs to the camera via the travel
+          singleton instead. */}
+      <Overlay />
       <HUD />
       <Loader />
     </ErrorBoundary>

@@ -44,6 +44,12 @@ export function sectionIndex(id: SectionId): number {
 }
 
 // Normalized scroll offset (0..1) at which a section is centered in view.
+// Uses SECTIONS.length, NOT SCROLL_PAGES: the camera's world-Z position is a
+// straight lerp of `offset` across the N department slots, so any timing
+// that has to line up with the camera (HTML fade, rail nav) must divide by
+// the same N. SCROLL_PAGES adds extra physical scroll distance for pacing/
+// breathing room — using it here desyncs the last section's fade window
+// from where the camera actually is, cutting it off before scroll ends.
 export function sectionOffset(index: number): number {
-  return (index + 0.5) / SCROLL_PAGES;
+  return (index + 0.5) / SECTIONS.length;
 }

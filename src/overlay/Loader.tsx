@@ -29,8 +29,8 @@ export function Loader() {
   if (gone) return null;
 
   return (
-    <div className={`loader ${progress >= 100 ? "is-done" : ""}`}>
-      <div className="loader__mark">◆</div>
+    <div className={`loader ${progress >= 100 ? "is-done" : ""}`} role="status" aria-label="Loading">
+      <div className="loader__mark" aria-hidden="true">◆</div>
       <div className="loader__name">AImagino Solution</div>
       <div className="loader__meta">INITIALIZING HEADQUARTERS</div>
       <div className="loader__bar">

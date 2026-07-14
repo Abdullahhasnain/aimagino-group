@@ -8,4 +8,18 @@ export default defineConfig({
   // the repo name.
   base: './',
   plugins: [react()],
+  build: {
+    rolldownOptions: {
+      output: {
+        // Split the heavy stable vendors from app code so they load in
+        // parallel and stay browser-cached across app-code deploys.
+        codeSplitting: {
+          groups: [
+            { name: 'three', test: /node_modules[\\/](three|@react-three|postprocessing|maath)/ },
+            { name: 'react', test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/ },
+          ],
+        },
+      },
+    },
+  },
 })

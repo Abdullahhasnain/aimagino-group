@@ -51,20 +51,39 @@ body {
   background: rgba(124, 92, 255, 0.4);
 }
 
+/* Keyboard focus: a clear ring on anything interactive, mouse clicks stay clean. */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
 /* ============================ OVERLAY / PANELS ============================ */
+/* Fixed, click-transparent layer above the canvas. Panels all occupy the
+   viewport and fade in/out as the walker approaches their department, so
+   no scroll-linked translation is needed — wheel events pass through to
+   the canvas's scroll capture underneath. */
 .overlay {
-  width: 100%;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
 }
 
 .panel {
   position: absolute;
-  left: 0;
-  width: 100%;
-  height: 100vh;
+  inset: 0;
   display: flex;
   align-items: center;
   padding: clamp(24px, 6vw, 96px);
   will-change: opacity, transform;
+  pointer-events: none;
+}
+/* Interactive elements accept clicks only while their panel is active, so
+   dormant panels never block the scroll gesture or the scene. */
+.panel.is-live a {
+  pointer-events: auto;
 }
 .panel--left {
   justify-content: flex-start;
@@ -78,6 +97,23 @@ body {
 }
 .panel__inner {
   max-width: 540px;
+  /* Safety net: the real scroll gesture drives the 3D camera, not page
+     scroll, so content that doesn't fit a short viewport (common on
+     laptops running 125-150% OS display scaling) would otherwise be
+     silently clipped with no way to reach it. This never engages at
+     normal laptop/desktop heights — it's a fallback, not the layout. */
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(37, 232, 255, 0.35) transparent;
+}
+.panel__inner::-webkit-scrollbar {
+  width: 5px;
+}
+.panel__inner::-webkit-scrollbar-thumb {
+  background: rgba(37, 232, 255, 0.35);
+  border-radius: 4px;
 }
 .panel--center .panel__inner {
   max-width: 760px;
@@ -749,6 +785,41 @@ body {
   }
   .loader__bar {
     width: min(240px, 70vw);
+  }
+}
+
+/* Real laptop viewports (1366x768, 1440x900, 1536x864, 1920x1080) are
+   frequently rendered at an EFFECTIVE height well below their nominal
+   resolution once OS display scaling (125-150% is the Windows laptop
+   default) and browser chrome are subtracted — often 500-700px of usable
+   CSS height. The base spacing above was tuned against tall external
+   monitors and would previously overflow those panels. This tightens
+   vertical rhythm only; layout, colors, and type scale are unchanged. */
+@media (max-height: 820px) {
+  .panel {
+    padding: clamp(16px, 4vh, 48px) clamp(24px, 6vw, 96px);
+  }
+  .kicker {
+    margin-bottom: 8px;
+  }
+  .title {
+    margin-bottom: 10px;
+  }
+  .tagline {
+    margin-bottom: 14px;
+  }
+  .hint-inline {
+    margin-top: 14px;
+  }
+  .contact-grid {
+    margin: 4px auto 16px;
+  }
+  .cta {
+    margin: 2px 0 14px;
+    padding: 14px 38px;
+  }
+  .fineprint {
+    line-height: 1.5;
   }
 }
 
